@@ -127,7 +127,11 @@ def lime_importance(chemin, model_name):
     plt.yticks(y_pos, bars)
     plt.title('With lime '+model_name+' prêt '+str(id_pret))
     return fig
-    
+
+def target_score(target,id_pret):
+    classe = target[target.index == int(id_pret)]
+    classe = classe.iloc[0].item()
+    return classe 
 
 res_model_name = ''
 df_shap_values = None
@@ -158,17 +162,26 @@ st.write("Credit amount : {:.0f}".format(data.loc[data.index == int(id_pret),"AM
 st.write("Credit annuities : {:.0f}".format(data.loc[data.index == int(id_pret),"AMT_ANNUITY"].values[0]))
 st.write("Amount of property for credit : {:.0f}".format(data.loc[data.index == int(id_pret),"AMT_GOODS_PRICE"].values[0]))
 
+classe = target_score(target,id_pret)
 score = prediction(model_name, data, id_pret)
 if score == 0:
-	prediction = "Loan "+str(id_pret)+" granted"
+    if score == classe :
+        prediction = "Loan "+str(id_pret)+" granted, it's a good predict"
+    else :
+        prediction = "Loan "+str(id_pret)+" granted, it's a bad predict"
 else :
-	prediction = "Loan "+str(id_pret)+" refused"
+    if score == classe :
+        prediction = "Loan "+str(id_pret)+" refused, it's a good predict"
+    else :
+        prediction = "Loan "+str(id_pret)+" refused, it's a bad predict"
+        
 	
 st.subheader(prediction)
 
-res_model_name,df_shap_values,fig = shap_importance(model_name,id_pret,res_model_name,df_shap_values)
-st.pyplot(fig)
-
-fig_lime = lime_importance(chemin, model_name)
-st.pyplot(fig_lime)
+if st.checkbox("Show shap explaination ?"):
+    res_model_name,df_shap_values,fig = shap_importance(model_name,id_pret,res_model_name,df_shap_values)
+    st.pyplot(fig)
+if st.checkbox("Show lime explaination ?"):
+    fig_lime = lime_importance(chemin, model_name)
+    st.pyplot(fig_lime)
 
