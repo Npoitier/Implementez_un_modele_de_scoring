@@ -34,10 +34,13 @@ def load_preprocessing(chemin, model_name):
 
 def load_model(chemin, model_name):
     #file = open(chemin + 'data/' + model_name +'_TL_SN_pipe_final_colonnes.csv', "r")
-    file = pd.read_csv(chemin + 'data/' + model_name +'_TL_SN_pipe_final_colonnes.csv', encoding ='utf-8')
-    features = []
-    for line in file :    
-        features.append(line.replace('\n',''))
+    #file = pd.read_csv(chemin + 'data/' + model_name +'_TL_SN_pipe_final_colonnes.csv', header=0, encoding ='utf-8')
+    file = pd.read_csv(chemin + 'data/' + model_name +'_TL_SN_pipe_final_colonnes.csv', header=None, names=['col_name'], encoding ='utf-8')
+    features = pd.Series(file['col_name']).tolist()
+
+    #features = []
+    #for line in file :    
+    #    features.append(line.replace('\n',''))
     if 	model_name == 'RandomForestClassifier':
         seuil = 0.1
     else :
