@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 from lime import lime_tabular
 from zipfile import ZipFile
 import requests
-from io import StringIO 
-import json
+from io import StringIO
+import json 
 
 @st.cache
 def load_data():
@@ -154,7 +154,7 @@ def get_importance(model_name,id_pret,method):
     clrs = ['green' if (x > 0) else 'red' for x in height ]
     plt.barh(y_pos, height, color =clrs)
     plt.yticks(y_pos, bars)
-    plt.title('With lime '+model_name+' prêt '+str(id_pret))
+    plt.title('With '+method+' '+model_name+' prêt '+str(id_pret))
     return fig
 
 #def target_score(target,id_pret):
