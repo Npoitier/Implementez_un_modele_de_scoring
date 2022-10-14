@@ -12,6 +12,7 @@ from lime import lime_tabular
 from zipfile import ZipFile
 import requests
 from io import StringIO 
+import json
 
 @st.cache
 def load_data():
@@ -144,8 +145,8 @@ def get_importance(model_name,id_pret,method):
     height = []
     bars = []
     for i,v in dico.items():
-    bars.append(i)
-    height.append(v)
+        bars.append(i)
+        height.append(v)
     fig = plt.figure(figsize=(10,len(bars)//2))
     plt.plot([0,0], [-1, len(bars)], color='darkblue', linestyle='--')
     #print(maxi,somme,len(bars),mini)
@@ -161,8 +162,8 @@ def get_importance(model_name,id_pret,method):
 #    classe = classe.iloc[0].item()
 #    return classe 
 
-res_model_name = ''
-df_shap_values = None
+#res_model_name = ''
+#df_shap_values = None
 chemin, data, target = load_data()
 
 # sidebar

@@ -5,3 +5,4 @@ pandas==1.4.4
 streamlit==1.13.0
 imblearn<0.9.1
 lightgbm==3.3.2
+json5==0.9.6
