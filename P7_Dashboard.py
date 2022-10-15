@@ -132,15 +132,16 @@ def load_data():
 #    plt.yticks(y_pos, bars)
 #    plt.title('With lime '+model_name+' prêt '+str(id_pret))
 #    return fig
-def prediction(model_name, id_pret):
-    dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/predict/"+model_name+"/indice/"+str(id_pret))
+
+def prediction(model_name, metric, id_pret):
+    dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/predict/"+model_name+"/metric/"+metric+"/indice/"+str(id_pret))
     dico = json.loads(dicostr.text)
     score = int(dico.get('score'))
     classe = int(dico.get('classe'))
     return score, classe
     
-def get_importance(model_name,id_pret,method):
-    dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/"+method+"/"+model_name+"/indice/"+str(id_pret))
+def get_importance(model_name, metric, id_pret, method):
+    dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/"+method+"/"+model_name+"/metric/"+metric+"/indice/"+str(id_pret))
     dico = json.loads(dicostr.text)
     height = []
     bars = []
@@ -172,6 +173,9 @@ list_model = ['RandomForestClassifier','LGBMClassifier']
 model_name = st.sidebar.selectbox("Model", list_model)
 # model, features, seuil = load_model(chemin,model_name)
 
+list_metric = ['average_precision_score','BAW_metrique']
+metric = st.sidebar.selectbox("Optimisation Metric", list_metric)
+
 list_prets = data.index.values
 id_pret = st.sidebar.selectbox("Loan ID", list_prets)
 
@@ -193,7 +197,7 @@ st.write("Amount of property for credit : {:.0f}".format(data.loc[data.index == 
 
 #classe = target_score(target,id_pret)
 #score = prediction(model_name, data, id_pret)
-score, classe = prediction(model_name, id_pret)
+score, classe = prediction(model_name, metric, id_pret)
 if score == 0:
     if score == classe :
         prediction = "Loan "+str(id_pret)+" granted, it's a good predict"
@@ -209,11 +213,11 @@ else :
 st.subheader(prediction)
 
 if st.sidebar.checkbox("Show shap explaination ?"):
-    fig = get_importance(model_name,id_pret,'shap')
+    fig = get_importance(model_name, metric, id_pret, 'shap')
     #res_model_name,df_shap_values,fig = shap_importance(model_name,id_pret,res_model_name,df_shap_values)
     st.pyplot(fig)
 if st.sidebar.checkbox("Show lime explaination ?"):
-    fig_lime = get_importance(model_name,id_pret,'lime')
+    fig_lime = get_importance(model_name, metric, id_pret, 'lime')
     #fig_lime = lime_importance(chemin, model_name)
     st.pyplot(fig_lime)
 
