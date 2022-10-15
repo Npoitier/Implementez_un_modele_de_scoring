@@ -1,1 +1,0 @@
-web: streamlit run P7_Dashboard.py runserver 0.0.0.0:5000
