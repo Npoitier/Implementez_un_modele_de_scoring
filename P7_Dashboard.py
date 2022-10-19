@@ -138,10 +138,15 @@ def prediction(model_name, metric, id_pret):
     dico = json.loads(dicostr.text)
     score = int(dico.get('score'))
     classe = int(dico.get('classe'))
-    return score, classe
+    fiabilite = float(dico.get('fiabilite'))
+    return score, classe, fiabilite
     
 def get_importance(model_name, metric, id_pret, method):
-    dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/"+method+"/"+model_name+"/metric/"+metric+"/indice/"+str(id_pret))
+    
+    if method == 'featureimportance':
+        dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/"+method+"/"+model_name+"/metric/"+metric)
+    else:
+        dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/"+method+"/"+model_name+"/metric/"+metric+"/indice/"+str(id_pret))
     dico = json.loads(dicostr.text)
     height = []
     bars = []
@@ -197,7 +202,7 @@ st.write("Amount of property for credit : {:.0f}".format(data.loc[data.index == 
 
 #classe = target_score(target,id_pret)
 #score = prediction(model_name, data, id_pret)
-score, classe = prediction(model_name, metric, id_pret)
+score, classe, fiabilite = prediction(model_name, metric, id_pret)
 if score == 0:
     if score == classe :
         prediction = "Loan "+str(id_pret)+" granted, it's a good predict"
@@ -211,6 +216,7 @@ else :
         
 	
 st.subheader(prediction)
+st.write("model's confidence about ranking "+str(round(fiabilite,2))+'%')
 
 if st.sidebar.checkbox("Show shap explaination ?"):
     fig = get_importance(model_name, metric, id_pret, 'shap')
@@ -221,3 +227,5 @@ if st.sidebar.checkbox("Show lime explaination ?"):
     #fig_lime = lime_importance(chemin, model_name)
     st.pyplot(fig_lime)
 
+fig_gen = get_importance(model_name, metric, id_pret, 'featureimportance')
+st.sidebar.pyplot(fig_gen)
