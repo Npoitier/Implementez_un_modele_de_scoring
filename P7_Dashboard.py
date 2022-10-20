@@ -145,8 +145,11 @@ def get_importance(model_name, metric, id_pret, method):
     
     if method == 'featureimportance':
         dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/"+method+"/"+model_name+"/metric/"+metric)
+        Title = 'model: '+model_name+' metric: '+metric+' features importance'
     else:
         dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/"+method+"/"+model_name+"/metric/"+metric+"/indice/"+str(id_pret))
+        Title = 'With '+method+' '+model_name+' prêt '+str(id_pret)
+        
     dico = json.loads(dicostr.text)
     height = []
     bars = []
@@ -160,7 +163,7 @@ def get_importance(model_name, metric, id_pret, method):
     clrs = ['green' if (x > 0) else 'red' for x in height ]
     plt.barh(y_pos, height, color =clrs)
     plt.yticks(y_pos, bars)
-    plt.title('With '+method+' '+model_name+' prêt '+str(id_pret))
+    plt.title(Title)
     return fig
 
 #def target_score(target,id_pret):
