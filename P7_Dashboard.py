@@ -12,7 +12,9 @@ import matplotlib.pyplot as plt
 # from zipfile import ZipFile
 import requests
 # from io import StringIO
-import json 
+import json
+import os
+from PIL import Image
 
 @st.cache
 def load_data():
@@ -61,6 +63,24 @@ def get_importance(model_name, metric, id_pret, method):
     plt.yticks(y_pos, bars)
     plt.title(Title)
     return fig
+    
+def get_graphlist():
+    images = r"C:\Users\nisae\OneDrive\Documents\GitHub\Implementez_un_modele_de_scoring\pictures"
+    images = "./pictures/"
+    extension = '.jpg'
+    graph_list = []
+    for root, dirs_list, files_list in os.walk(images):
+        for file_name in files_list:
+            if os.path.splitext(file_name)[-1] == extension:
+                graph = file_name.split('.')[0].replace('_',' ')
+                graph_list.append(graph)
+    return graph_list, images
+
+def graph_picture(images,graph_name):
+    image_name = images+"/"+graph_name.replace(' ','_')+'.jpg'
+    image= Image.open(image_name)
+    return image
+
 
 chemin, data, target = load_data()
 
@@ -79,6 +99,12 @@ id_pret = st.sidebar.selectbox("Loan ID", list_prets)
 # 
 st.write("Loan ID selection : ", id_pret)
 st.write("model :",model_name)
+
+st.header("Data information")
+list_graph, images = get_graphlist()
+graph_name = st.selectbox("Graph", list_graph)
+image = graph_picture(images,graph_name)
+st.image(image)
 
 st.header("Customer information display")
 st.write("Gender : ", data.loc[data.index == int(id_pret),"CODE_GENDER"].values[0])
