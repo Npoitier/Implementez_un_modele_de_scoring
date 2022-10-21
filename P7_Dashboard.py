@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from pathlib import Path
+# from pathlib import Path
 import pandas as pd
 import streamlit as st
-import pickle
-import re
+# import pickle
+# import re
 import numpy as np
 import matplotlib.pyplot as plt
-from lime import lime_tabular
-from zipfile import ZipFile
+# from lime import lime_tabular
+# from zipfile import ZipFile
 import requests
-from io import StringIO
+# from io import StringIO
 import json 
 
 @st.cache
@@ -27,111 +27,7 @@ def load_data():
     data = data[list_columns].copy() 
     return chemin, data, target
 
-#def load_preprocessing(chemin, model_name):
-#    #filename = chemin + 'average_precision_score/' + 'TL_SN_pipe'+model_name+'_final_preprocess_model.sav'
-#    filename = 'TL_SN_pipe'+model_name+'_final_preprocess_model.sav'
-#    model = pickle.load(open(filename, 'rb'))
-#    return model
 
-#def load_model(chemin, model_name):
-#    #file = open(chemin + 'data/' + model_name +'_TL_SN_pipe_final_colonnes.csv', "r")
-#    #file = pd.read_csv(chemin + 'data/' + model_name +'_TL_SN_pipe_final_colonnes.csv', header=0, encoding ='utf-8')
-#    file = pd.read_csv(chemin + 'data/' + model_name +'_TL_SN_pipe_final_colonnes.csv', header=None, names=['col_name'], encoding ='utf-8')
-#    features = pd.Series(file['col_name']).tolist()
-
-#    #features = []
-#    #for line in file :    
-#    #    features.append(line.replace('\n',''))
-#    if 	model_name == 'RandomForestClassifier':
-#        seuil = 0.1
-#    else :
-#        seuil = 0.5
-
-#    #filename = chemin + 'average_precision_score/'+'TL_SN_pipe' + model_name +'_final_model.sav''./' +'/average_precision_score/'+ 
-#    filename = 'TL_SN_pipe' + model_name +'_final_model.sav'
-#    model = pickle.load(open(filename, 'rb'))
-
-#    return model, features, seuil
-
-#def prediction(model_name, data, id_pret):
-   
-#    model, features, seuil = load_model(chemin, model_name)
-#    X=data[features].copy()    
-#    preproc = load_preprocessing(chemin, model_name)
-#    X_transform = preproc.transform(X[X.index == int(id_pret)])
-#    list_colonnes = preproc.get_feature_names_out().tolist()
-#    list_colonnes = pd.Series(list_colonnes).str.replace('quanti__','').str.replace('remainder__','').str.replace('quali__','').tolist()
-#    X_transform = pd.DataFrame(X_transform,columns=list_colonnes)
-#    X_transform = X_transform.rename(columns = lambda x:re.sub('[^A-Za-z0-9_]+', '', x)) 
-#    predic_classe = model.predict_proba(X_transform)[:,1]
-#    score = (predic_classe > seuil).astype(int)
-#    return int(score)
-
-
-    
-     
-#def shap_importance(model_name,id_pret,res_model_name,df_shap_values):
-#    if model_name != res_model_name:
-#        df_shap_values = pd.read_csv(chemin + 'data/' +model_name+"_shap_values.csv",
-#                                 index_col=0, encoding ='utf-8')
-#    #height = list(df_shap_values.iloc[id_pret])
-#    height = df_shap_values[df_shap_values.index == int(id_pret)]
-#    height = np.array(height.T)
-#    height = height[:,0].tolist()
-#    #somme = np.sum(height)
-#    maxi = np.max(np.abs(height))
-#    mini = np.min(np.abs(height))
-#    bars = df_shap_values.columns.tolist()
-#    bars = [bars[x] for x in range(len(height)) if np.abs(height[x]) >= maxi*0.05]
-#    height = [height[x] for x in range(len(height)) if np.abs(height[x]) >= maxi*0.05]
-#    fig = plt.figure(figsize=(10,len(bars)//2))
-#    plt.plot([0,0], [-1, len(bars)], color='darkblue', linestyle='--')
-#    #print(maxi,somme,len(bars),mini)
-#    y_pos = np.arange(len(bars))
-#    clrs = ['green' if (x > 0) else 'red' for x in height ]
-#    plt.barh(y_pos, height, color =clrs)
-#    plt.yticks(y_pos, bars)
-#    plt.title('With Shap '+model_name+' prêt '+str(id_pret))
-#    #plt.show()
-#    return model_name,df_shap_values,fig
-    
-#def lime_importance(chemin, model_name):
-#    model, features, seuil = load_model(chemin, model_name)
-#    X=data[features].copy()   
-#    preproc = load_preprocessing(chemin, model_name)    
-#    X_transform = preproc.transform(X) 
-#    list_colonnes = preproc.get_feature_names_out().tolist()
-#    list_colonnes = pd.Series(list_colonnes).str.replace('quanti__','').str.replace('remainder__','').str.replace('quali__','').tolist()
-#    X_transform = pd.DataFrame(X_transform,columns=list_colonnes)
-#    X_transform = X_transform.rename(columns = lambda x:re.sub('[^A-Za-z0-9_]+', '', x)) 
-#    list_colonnes = X_transform.columns.tolist()
-#    X_transform.index = X.index
-#    explainer = lime_tabular.LimeTabularExplainer(X_transform, mode="classification",
-#                                              class_names=["Solvable", "Non Solvable"],
-#                                              feature_names=list_colonnes,
-#                                                 discretize_continuous=False)
-#    expdt0 = explainer.explain_instance(np.array(X_transform[X_transform.index == int(id_pret)].T).ravel(),
-#                                        model.predict_proba ,num_features=len(list_colonnes))
-#    test = np.array(expdt0.local_exp.get(1))
-#    list_cols = [list_colonnes[int(i)] for i in test[:,0]]
-#    height = test[:,1].tolist() 
-#    height.reverse()    
-#    #somme = np.sum(height)
-#    maxi = np.max(np.abs(height))
-#    mini = np.min(np.abs(height))
-#    bars = list_cols
-#    bars.reverse()
-#    bars = [bars[x] for x in range(len(height)) if np.abs(height[x]) >= maxi*0.05]
-#    height = [height[x] for x in range(len(height)) if np.abs(height[x]) >= maxi*0.05]
-#    fig = plt.figure(figsize=(10,len(bars)//2))
-#    plt.plot([0,0], [-1, len(bars)], color='darkblue', linestyle='--')
-#    #print(maxi,somme,len(bars),mini)
-#    y_pos = np.arange(len(bars))
-#    clrs = ['green' if (x > 0) else 'red' for x in height ]
-#    plt.barh(y_pos, height, color =clrs)
-#    plt.yticks(y_pos, bars)
-#    plt.title('With lime '+model_name+' prêt '+str(id_pret))
-#    return fig
 
 def prediction(model_name, metric, id_pret):
     dicostr = requests.get("https://modele-de-scoring-api.herokuapp.com/predict/"+model_name+"/metric/"+metric+"/indice/"+str(id_pret))
@@ -166,13 +62,6 @@ def get_importance(model_name, metric, id_pret, method):
     plt.title(Title)
     return fig
 
-#def target_score(target,id_pret):
-#    classe = target[target.index == int(id_pret)]
-#    classe = classe.iloc[0].item()
-#    return classe 
-
-#res_model_name = ''
-#df_shap_values = None
 chemin, data, target = load_data()
 
 # sidebar
@@ -203,8 +92,6 @@ st.write("Credit amount : {:.0f}".format(data.loc[data.index == int(id_pret),"AM
 st.write("Credit annuities : {:.0f}".format(data.loc[data.index == int(id_pret),"AMT_ANNUITY"].values[0]))
 st.write("Amount of property for credit : {:.0f}".format(data.loc[data.index == int(id_pret),"AMT_GOODS_PRICE"].values[0]))
 
-#classe = target_score(target,id_pret)
-#score = prediction(model_name, data, id_pret)
 score, classe, fiabilite = prediction(model_name, metric, id_pret)
 if score == 0:
     if score == classe :
@@ -223,12 +110,11 @@ st.write("model's confidence about ranking "+str(round(fiabilite,2))+'%')
 
 if st.sidebar.checkbox("Show shap explaination ?"):
     fig = get_importance(model_name, metric, id_pret, 'shap')
-    #res_model_name,df_shap_values,fig = shap_importance(model_name,id_pret,res_model_name,df_shap_values)
     st.pyplot(fig)
 if st.sidebar.checkbox("Show lime explaination ?"):
     fig_lime = get_importance(model_name, metric, id_pret, 'lime')
-    #fig_lime = lime_importance(chemin, model_name)
     st.pyplot(fig_lime)
-
-fig_gen = get_importance(model_name, metric, id_pret, 'featureimportance')
-st.sidebar.pyplot(fig_gen)
+    
+if st.sidebar.checkbox("Show model features importance ?"):
+    fig_gen = get_importance(model_name, metric, id_pret, 'featureimportance')
+    st.sidebar.pyplot(fig_gen)
